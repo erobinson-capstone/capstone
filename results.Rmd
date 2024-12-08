@@ -1,0 +1,188 @@
+---
+title: "Results"
+author: "Erik Robinson"
+date: "2024-11-23"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+library(dplyr)
+library(ggformula)
+
+motion <- read.csv('Motion.csv', fileEncoding="UTF-8-BOM")
+motion$Product.Code<-as.character(motion$Product.Code)
+
+ic <- read.csv('IC.csv', fileEncoding="UTF-8-BOM")
+ic$Product.Code<-as.character(ic$Product.Code)
+
+vfd <- read.csv('VFD.csv', fileEncoding="UTF-8-BOM")
+vfd$Product.Code<-as.character(vfd$Product.Code)
+
+plc <- read.csv('PLC.csv', fileEncoding="UTF-8-BOM")
+plc$Product.Code<-as.character(plc$Product.Code)
+
+elec <- read.csv('Electrical_supplies.csv', fileEncoding="UTF-8-BOM")
+elec$Product.Code<-as.character(elec$Product.Code)
+
+
+
+total <- bind_rows(elec, motion, vfd, ic, plc)
+
+```
+
+
+```{r}
+
+gf_point(Usefulness ~ Product.Code,
+         data = motion,
+         color = ~inside_gl)
+
+m_string_counts <- table(motion$Recommendation)
+m_df <- as.data.frame(m_string_counts) 
+
+# Create a bar plot 
+#barplot(m_string_counts,  
+#        main = "Figure 4",
+#        sub = "Frequency of Recommendation for Motion Control",
+#        ylab = "Frequency",  
+#        col = "lightblue",  
+#        las = 2,
+#        cex.names = 0.5) 
+m_df %>%
+  gf_col(Var1 ~ Freq, 
+#         title = "Figure 4", 
+#         subtitle = "Frequency of Recommendation for Motion Control",
+         xlab = "Count",
+         ylab = "Product") %>%
+  gf_theme(plot.title = element_text(hjust = -0.5),
+           plot.subtitle = element_text(hjust = -1.65))
+
+```
+```{r}
+
+gf_point(Usefulness ~ Product.Code, data = ic, color = ~inside_gl)
+
+ic_string_counts <- table(ic$Recommendation) 
+ic_df <- as.data.frame(ic_string_counts) 
+
+# Create a bar plot 
+#barplot(ic_string_counts,  
+#        main = "Figure 6 - Frequency of recommendation",  
+#        ylab = "Frequency",  
+#        col = "lightblue",  
+#        las = 2,
+#        cex.names = 0.5) 
+
+ic_df %>%
+  gf_col(Var1 ~ Freq, 
+#         title = "Figure 6", 
+#         subtitle = "Frequency of Recommendation for Industrial Controls",
+         xlab = "Count",
+         ylab = "Product") %>%
+  gf_theme(plot.title = element_text(hjust = -0.5),
+           plot.subtitle = element_text(hjust = -1.85))
+
+```
+
+
+
+```{r}
+
+gf_point(Usefulness ~ Product.Code, data = plc, color = ~inside_gl)
+
+plc_string_counts <- table(plc$Recommendation) 
+plc_df <- as.data.frame(plc_string_counts) 
+ 
+# Create a bar plot 
+#barplot(plc_string_counts,  
+#        main = "Figure 2 - Frequency of recommendation",  
+#        ylab = "Frequency",  
+#        col = "lightblue",  
+#        las = 2,
+#        cex.names = 0.5) 
+
+plc_df %>%
+  gf_col(Var1 ~ Freq, 
+#         title = "Figure 2", 
+#         subtitle = "Frequency of Recommendation for Programmable Controllers",
+         xlab = "Count",
+         ylab = "Product") %>%
+  gf_theme(plot.title = element_text(hjust = -0.5),
+           plot.subtitle = element_text(hjust = -3.85))
+
+```
+
+
+```{r}
+
+gf_point(Usefulness ~ Product.Code, data = vfd, color = ~inside_gl)
+
+vfd_string_counts <- table(vfd$Recommendation) 
+vfd_df <- as.data.frame(vfd_string_counts) 
+ 
+# Create a bar plot 
+#barplot(vfd_string_counts,  
+#        main = "Figure 8 - Frequency of recommendation",  
+#        ylab = "Frequency",  
+#        col = "lightblue",  
+#        las = 2,
+#        cex.names = 0.5) 
+
+vfd_df %>%
+  gf_col(Var1 ~ Freq, 
+#         title = "Figure 8", 
+#         subtitle = "Frequency of Recommendation for Variable Frequency Drives",
+         xlab = "Count",
+         ylab = "Product") %>%
+  gf_theme(plot.title = element_text(hjust = -0.5),
+           plot.subtitle = element_text(hjust = -3.25))
+
+```
+
+
+```{r}
+
+gf_point(Usefulness ~ Product.Code, data = elec, color = ~inside_gl)
+
+e_string_counts <- table(elec$Recommendation) 
+e_df <- as.data.frame(e_string_counts) 
+ 
+# Create a bar plot 
+#barplot(e_string_counts,  
+#        main = "Figure 10 - Frequency of recommendation",  
+#        ylab = "Frequency",  
+#        col = "lightblue",  
+#        las = 2,
+#        cex.names = 0.5) 
+
+e_df %>%
+  gf_col(Var1 ~ Freq, 
+#         title = "Figure 10", 
+#         subtitle = "Frequency of Recommendation for Electrical Supplies",
+         xlab = "Count",
+         ylab = "Product") %>%
+  gf_theme(plot.title = element_text(hjust = -0.5),
+           plot.subtitle = element_text(hjust = -1.75))
+  
+
+```
+
+
+```{r}
+
+gf_dens2( ~ Usefulness, data = total, fill = ~Product.Group, ylab = "Density")
+
+gf_point(Usefulness ~ Product.Code, data = total, color = ~inside_gl, title = "Figure 11", subtitle = "Total Recommender System Effectiveness", xlab = "Product") %>%
+  gf_theme(axis.text.x = element_blank())
+
+gf_boxplot(Usefulness ~ Product.Group, data = total, color = ~inside_gl, position = "dodge") %>% 
+  gf_theme(axis.text.x = element_text(angle = 90, vjust = 0.6))
+
+```
+
+
